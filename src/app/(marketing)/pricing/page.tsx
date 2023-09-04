@@ -23,25 +23,24 @@ export function generateMetadata({
   const hasPromoCode =
     _promoCode && typeof discountPercentage[_promoCode] === "number";
 
-  const defaultMetadata = {
+  let pageDescription = "Upgrade your account to unlock premium features.";
+
+  if (hasPromoCode)
+    switch (_promoCode) {
+      case "free4u":
+        pageDescription = `OMG! You are so lucky! This is free for you!`;
+      default:
+        pageDescription = `Unlock premium features for ${discountPercentage[_promoCode]}% off!`;
+    }
+
+  return {
     title: "Pricing",
-    description: "Upgrade your account to unlock premium features.",
+    description: pageDescription,
+    openGraph: {
+      description: pageDescription,
+      type: "website",
+    },
   };
-
-  if (!hasPromoCode) return defaultMetadata;
-
-  switch (_promoCode) {
-    case "free4u":
-      return {
-        ...defaultMetadata,
-        description: `Unlock premium features for free!`,
-      };
-    default:
-      return {
-        ...defaultMetadata,
-        description: `Unlock premium features for ${discountPercentage[_promoCode]}% off!`,
-      };
-  }
 }
 
 function renderTitle(promoCode: string | undefined) {
@@ -50,9 +49,7 @@ function renderTitle(promoCode: string | undefined) {
   const hasPromoCode =
     promoCode && typeof discountPercentage[promoCode] === "number";
 
-  if (!hasPromoCode) {
-    return "VoteHub Premium";
-  }
+  if (!hasPromoCode) return "VoteHub Premium";
 
   return `Enjoy your ${discountPercentage[promoCode]}% discount`;
 }
@@ -63,9 +60,7 @@ function renderDescription(promoCode: string | undefined) {
   const hasPromoCode =
     promoCode && typeof discountPercentage[promoCode] === "number";
 
-  if (!hasPromoCode) {
-    return "Upgrade your account to unlock premium features.";
-  }
+  if (!hasPromoCode) return "Upgrade your account to unlock premium features.";
 
   switch (promoCode) {
     case "free4u":
