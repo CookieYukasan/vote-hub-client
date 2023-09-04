@@ -41,8 +41,15 @@ export type NavItem = {
 
 export type MainNavItem = NavItem;
 
+type WhyChooseUsItem = {
+  title: string;
+  description: string;
+  icon: keyof typeof Icons | React.ReactNode;
+};
+
 export type MarketingConfig = {
   mainNav: MainNavItem[];
+  whyChooseUsItems: WhyChooseUsItem[];
 };
 
 export type SidebarNavItem = {
