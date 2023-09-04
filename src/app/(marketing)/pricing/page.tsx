@@ -12,14 +12,14 @@ import Link from "next/link";
 
 interface PricingPageProps {
   searchParams: {
-    promoCode: string;
+    promoCode: string | undefined;
   };
 }
 
 export function generateMetadata({
   searchParams: { promoCode },
 }: PricingPageProps): Metadata {
-  const _promoCode = promoCode.toLowerCase();
+  const _promoCode = promoCode?.toLowerCase();
   const hasPromoCode =
     _promoCode && typeof discountPercentage[_promoCode] === "number";
 
@@ -44,7 +44,9 @@ export function generateMetadata({
   }
 }
 
-function renderTitle(promoCode: string) {
+function renderTitle(promoCode: string | undefined) {
+  if (!promoCode) return "VoteHub Premium";
+
   const hasPromoCode =
     promoCode && typeof discountPercentage[promoCode] === "number";
 
@@ -55,9 +57,12 @@ function renderTitle(promoCode: string) {
   return `Enjoy your ${discountPercentage[promoCode]}% discount`;
 }
 
-function renderDescription(promoCode: string) {
+function renderDescription(promoCode: string | undefined) {
+  if (!promoCode) return "Upgrade your account to unlock premium features.";
+
   const hasPromoCode =
     promoCode && typeof discountPercentage[promoCode] === "number";
+
   if (!hasPromoCode) {
     return "Upgrade your account to unlock premium features.";
   }
@@ -71,9 +76,9 @@ function renderDescription(promoCode: string) {
 }
 
 export default function PricingPage({ searchParams }: PricingPageProps) {
-  const promoCode = searchParams.promoCode.toLowerCase();
+  const promoCode = searchParams?.promoCode?.toLowerCase();
   const hasPromoCode =
-    searchParams.promoCode && typeof discountPercentage[promoCode] === "number";
+    promoCode && typeof discountPercentage[promoCode] === "number";
   const price = hasPromoCode
     ? calculatePriceByPromoCode(PREMIUM_PRICE, promoCode)
     : PREMIUM_PRICE;
