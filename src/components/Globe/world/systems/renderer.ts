@@ -1,8 +1,8 @@
 import { WebGLRenderer } from "three";
-import { canvasWidth, canvasHeight } from "./config";
+import { canvasHeight, canvasWidth } from "./config";
 
 function createRenderer() {
-  const renderer = new WebGLRenderer({ antialias: true, alpha: true });
+  const renderer = new WebGLRenderer({ antialias: false, alpha: true });
 
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(canvasWidth(), canvasHeight());
