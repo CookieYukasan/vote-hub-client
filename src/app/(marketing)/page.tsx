@@ -23,7 +23,7 @@ async function Home() {
           >
             Follow me on Linkedin
           </Link>
-          <h1 className="font-heading text-3xl sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="font-heading text-3xl bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-orange-400 sm:text-5xl md:text-6xl lg:text-7xl">
             Unlocking Digital Democracy with VoteHub
           </h1>
           <p className="max-w-[42rem] leading-normal text-muted-foreground sm:text-xl sm:leading-8">
