@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { World } from "./world/world";
 
-export default function Globe() {
+export default function Globe(props: React.ComponentProps<"div">) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export default function Globe() {
 
   return (
     <>
-      <div ref={containerRef}></div>
+      <div ref={containerRef} {...props}></div>
     </>
   );
 }

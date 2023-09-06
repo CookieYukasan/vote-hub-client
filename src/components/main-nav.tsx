@@ -22,16 +22,22 @@ export function MainNav({ items, children }: MainNavProps) {
 
   return (
     <div className="flex gap-6 md:gap-10">
-      <Link href="/" className="hidden items-center space-x-2 md:flex">
+      <Link
+        href="/"
+        className="hidden items-center space-x-2 md:flex"
+        data-aos="zoom-in"
+      >
         <Icons.logo />
         <span className="hidden font-bold sm:inline-block">
           {siteConfig.name}
         </span>
       </Link>
-      {items?.length ? (
+      {items?.length && (
         <nav className="hidden gap-6 md:flex">
           {items?.map((item, index) => (
             <Link
+              data-aos="zoom-in"
+              data-aos-delay={100 * (index + 1)}
               key={index}
               href={item.disabled ? "#" : item.href}
               className={cn(
@@ -46,7 +52,7 @@ export function MainNav({ items, children }: MainNavProps) {
             </Link>
           ))}
         </nav>
-      ) : null}
+      )}
       <button
         className="flex items-center space-x-2 md:hidden"
         onClick={() => setShowMobileMenu(!showMobileMenu)}
