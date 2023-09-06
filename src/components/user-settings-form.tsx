@@ -1,128 +1,186 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
-import * as React from "react";
-// import { User } from "@prisma/client"
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 import { User } from "@/@types";
-import { Icons } from "@/components/icons";
-import { buttonVariants } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { toast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
-import { userNameSchema } from "@/lib/validations/user";
+import { userSettingsFormSchema } from "@/lib/validations/user";
+import { useState } from "react";
+import { Icons } from "./icons";
+import { Button } from "./ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "./ui/command";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { Input } from "./ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import { toast } from "./ui/use-toast";
 
-interface UserNameFormProps extends React.HTMLAttributes<HTMLFormElement> {
+const languages = [
+  { label: "English", value: "en" },
+  { label: "French", value: "fr" },
+  { label: "German", value: "de" },
+  { label: "Spanish", value: "es" },
+  { label: "Portuguese", value: "pt" },
+  { label: "Russian", value: "ru" },
+  { label: "Japanese", value: "ja" },
+  { label: "Korean", value: "ko" },
+  { label: "Chinese", value: "zh" },
+] as const;
+
+type FormValues = z.infer<typeof userSettingsFormSchema>;
+
+interface UserSettingsForm {
   user: Pick<User, "_id" | "userName">;
 }
 
-type FormData = z.infer<typeof userNameSchema>;
-
-export function UserSettingsForm({
-  user,
-  className,
-  ...props
-}: UserNameFormProps) {
-  const router = useRouter();
-  const {
-    handleSubmit,
-    register,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(userNameSchema),
+export function UserSettingsForm({ user }: UserSettingsForm) {
+  const form = useForm<FormValues>({
+    resolver: zodResolver(userSettingsFormSchema),
     defaultValues: {
-      userName: user?.userName || "",
+      userName: user.userName,
     },
   });
-  const [isSaving, setIsSaving] = React.useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  async function onSubmit(data: FormData) {
-    setIsSaving(true);
+  async function onSubmit(data: FormValues) {
+    setIsLoading(true);
 
-    const response = await fetch(`/api/users/${user._id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        userName: data.userName,
-      }),
-    });
-
-    setIsSaving(false);
-
-    if (!response?.ok) {
-      return toast({
-        title: "Something went wrong.",
-        description: "Your name was not updated. Please try again.",
-        variant: "destructive",
-      });
-    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     toast({
-      description: "Your name has been updated.",
+      title: "You submitted the following values:",
+      description: (
+        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+        </pre>
+      ),
     });
 
-    router.refresh();
+    setIsLoading(false);
   }
 
   return (
-    <form
-      className={cn(className)}
-      onSubmit={handleSubmit(onSubmit)}
-      {...props}
-    >
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Name</CardTitle>
-          <CardDescription>
-            Please enter your full name or a display name you are comfortable
-            with.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-1">
-            <Label className="sr-only" htmlFor="name">
-              Name
-            </Label>
-            <Input
-              id="name"
-              className="w-[400px]"
-              size={32}
-              {...register("userName")}
-            />
-            {errors?.userName && (
-              <p className="px-1 text-xs text-red-600">
-                {errors.userName.message}
-              </p>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid lg:grid-cols-2 lg:gap-10">
+          <FormField
+            control={form.control}
+            name="userName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your name" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This is the name that will be displayed on your profile and in
+                  emails.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
-          </div>
-        </CardContent>
-        <CardFooter>
-          <button
-            type="submit"
-            className={cn(buttonVariants(), className)}
-            disabled={isSaving}
-          >
-            {isSaving && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+          />
+          <FormField
+            control={form.control}
+            name="companyName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Company Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Your Company" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This is the company name that will be displayed on your polls.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
             )}
-            <span>Save</span>
-          </button>
-        </CardFooter>
-      </Card>
-    </form>
+          />
+        </div>
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Language</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      role="combobox"
+                      className={cn(
+                        "w-[200px] justify-between",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      {field.value
+                        ? languages.find(
+                            (language) => language.value === field.value
+                          )?.label
+                        : "Select language"}
+                      <Icons.chevronTop className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-[200px] p-0">
+                  <Command>
+                    <CommandInput placeholder="Search language..." />
+                    <CommandEmpty>No language found.</CommandEmpty>
+                    <CommandGroup>
+                      {languages.map((language) => (
+                        <CommandItem
+                          value={language.label}
+                          key={language.value}
+                          onSelect={() => {
+                            form.setValue("language", language.value);
+                          }}
+                        >
+                          <Icons.check
+                            className={cn(
+                              "mr-2 h-4 w-4",
+                              language.value === field.value
+                                ? "opacity-100"
+                                : "opacity-0"
+                            )}
+                          />
+                          {language.label}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              <FormDescription>
+                This is the language that will be used in the dashboard.
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">
+          {isLoading ? (
+            <Icons.spinner className="animate-spin h-5 w-5" />
+          ) : (
+            "Update account"
+          )}
+        </Button>
+      </form>
+    </Form>
   );
 }
