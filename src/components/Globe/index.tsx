@@ -8,31 +8,11 @@ export default function Globe() {
 
   useEffect(() => {
     if (!containerRef.current) return;
-    let world: any = null;
-    let started = false;
 
-    function scrollHandler() {
-      if (!containerRef.current) return;
-      const isVisible =
-        containerRef.current.getBoundingClientRect().top - 100 <
-        window.innerHeight;
+    const world = new World(containerRef.current);
+    world.start();
 
-      if (isVisible && !started) {
-        world = new World(containerRef.current);
-        started = true;
-        world.start();
-      }
-    }
-
-    window.addEventListener("scroll", scrollHandler);
-
-    return () => {
-      if (!containerRef.current) return;
-
-      window.removeEventListener("scroll", scrollHandler);
-
-      if (world) world.stop();
-    };
+    return () => world.stop();
   }, []);
 
   return (
