@@ -44,10 +44,12 @@
     "three": "^0.142.0",
     "three-globe": "^2.24.6",
     "typescript": "5.2.2",
-    "zod": "^3.22.2"
+    "zod": "^3.22.2",
+    "zustand": "^4.4.1"
   },
   "devDependencies": {
     "@types/aos": "^3.0.4",
-    "@types/three": "^0.155.1"
+    "@types/three": "^0.155.1",
+    "simple-zustand-devtools": "^1.1.0"
   }
 }

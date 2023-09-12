@@ -15,6 +15,7 @@ import { authMessages } from "@/config/messages/auth";
 import { useFetch } from "@/hooks/use-fetch";
 import { cn } from "@/lib/utils";
 import { signUpSchema } from "@/lib/validations/auth";
+import { useUser } from "@/store/use-user";
 import Bowser from "bowser";
 import { useRouter } from "next/navigation";
 
@@ -41,8 +42,6 @@ export function UserRegisterForm({
     setIsLoading(true);
 
     try {
-      const device = Bowser.parse(window.navigator.userAgent);
-
       const response = await useFetch("auth/register", {
         method: "POST",
         headers: {
@@ -52,7 +51,7 @@ export function UserRegisterForm({
           email: data.email.toLowerCase(),
           password: data.password,
           userName: data.userName,
-          device,
+          device: Bowser.parse(window.navigator.userAgent),
         }),
       });
 
@@ -63,17 +62,8 @@ export function UserRegisterForm({
         throw new Error(authMessages.error[authErrorType]);
       }
 
-      // const signInResult = await signIn("credentials", {
-      //   email: data.email.toLowerCase(),
-      //   password: data.password,
-      //   device,
-      //   redirect: false,
-      //   callbackUrl: "/dashboard",
-      // });
-
-      const signInResult = true;
-
-      if (!signInResult) throw new Error(authMessages.error.loginFailed);
+      const { user } = await response.json();
+      useUser.getState().setUser(user);
 
       toast({
         description: authMessages.success.accountCreated,

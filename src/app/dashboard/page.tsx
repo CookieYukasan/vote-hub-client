@@ -7,7 +7,7 @@ export const metadata = {
   title: "Dashboard",
 };
 
-export default async function DashboardPage() {
+async function DashboardPage() {
   return (
     <DashboardShell>
       <DashboardHeader heading="Polls" text="Create and manage polls.">
@@ -37,3 +37,5 @@ export default async function DashboardPage() {
     </DashboardShell>
   );
 }
+
+export default DashboardPage;

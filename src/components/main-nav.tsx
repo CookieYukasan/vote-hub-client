@@ -1,15 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useSelectedLayoutSegment } from "next/navigation";
+import { usePathname } from "next/navigation";
 import * as React from "react";
 
 import { MainNavItem } from "@/@types";
 import { Icons } from "@/components/icons";
+import { MobileNav } from "@/components/mobile-nav";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
-import { MobileNav } from "./mobile-nav";
-// import { MobileNav } from "@/components/mobile-nav"
 
 interface MainNavProps {
   items?: MainNavItem[];
@@ -17,7 +16,7 @@ interface MainNavProps {
 }
 
 export function MainNav({ items, children }: MainNavProps) {
-  const segment = useSelectedLayoutSegment();
+  const pathname = usePathname();
   const [showMobileMenu, setShowMobileMenu] = React.useState<boolean>(false);
 
   return (
@@ -38,11 +37,11 @@ export function MainNav({ items, children }: MainNavProps) {
             <Link
               data-aos="zoom-in"
               data-aos-delay={100 * (index + 1)}
-              key={index}
+              key={item.href}
               href={item.disabled ? "#" : item.href}
               className={cn(
                 "flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
-                item.href.startsWith(`/${segment}`)
+                item.href === pathname && !item.disabled
                   ? "text-foreground"
                   : "text-foreground/60",
                 item.disabled && "cursor-not-allowed opacity-80"

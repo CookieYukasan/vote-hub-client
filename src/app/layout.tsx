@@ -71,6 +71,7 @@ export default function RootLayout({
         )}
       >
         <AppProviders>{children}</AppProviders>
+
         <Toaster />
         <TailwindIndicator />
       </body>

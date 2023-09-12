@@ -3,7 +3,7 @@ export const useFetch = async (url: string, options?: RequestInit) => {
     ...options?.headers,
   };
 
-  return fetch(`${process.env.API_ENDPOINT || "/api/"}${url}`, {
+  return fetch(url, {
     ...options,
     headers,
   });

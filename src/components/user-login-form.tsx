@@ -1,7 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -14,6 +14,7 @@ import { toast } from "@/components/ui/use-toast";
 import { authMessages } from "@/config/messages/auth";
 import { cn } from "@/lib/utils";
 import { signInSchema } from "@/lib/validations/auth";
+import { useUser } from "@/store/use-user";
 import Bowser from "bowser";
 
 interface UserAuthFormProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -31,30 +32,38 @@ export function UserLoginForm({ className, ...props }: UserAuthFormProps) {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const [isGitHubLoading, setIsGitHubLoading] = React.useState<boolean>(false);
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const setUser = useUser((state) => state.setUser);
 
   async function onSubmit(data: FormData) {
     setIsLoading(true);
 
     try {
-      const device = Bowser.parse(window.navigator.userAgent);
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email.toLowerCase(),
+          password: data.password,
+          device: Bowser.parse(window.navigator.userAgent),
+        }),
+      });
 
-      // const signInResult = await signIn("credentials", {
-      //   email: data.email.toLowerCase(),
-      //   password: data.password,
-      //   device,
-      //   redirect: false,
-      //   callbackUrl: searchParams?.get("callbackUrl") || "/dashboard",
-      // });
-
-      const signInResult = true;
-
-      if (!signInResult) {
+      if (!response.ok) {
         throw new Error(authMessages.error.invalidCredentials);
       }
 
-      return toast({
+      const { user } = await response.json();
+      // setUser(user);
+      useUser.setState({ user });
+
+      toast({
         description: authMessages.success.loginSuccess,
       });
+
+      router.push(searchParams.get("redirectUrl") || "/dashboard");
     } catch (error: any) {
       toast({
         description: error.message || authMessages.error.generic,

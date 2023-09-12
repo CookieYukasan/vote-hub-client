@@ -5,11 +5,12 @@ export type PromoCodes = Record<string, number>;
 export type User = {
   _id: string;
   userName: string;
-  image: string;
   email: string;
-  isSubscribe: boolean;
+  role: "user" | "admin";
+  banned: boolean;
   createdAt: string;
   updatedAt: string;
+  device: any;
 };
 
 export type Poll = {

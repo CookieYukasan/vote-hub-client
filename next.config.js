@@ -1,7 +1,17 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  env: {
-    API_ENDPOINT: process.env.API_ENDPOINT,
+  experimental: {
+    serverActions: true,
+  },
+  async rewrites() {
+    return {
+      fallback: [
+        {
+          source: "/api/:path*",
+          destination: "http://localhost:5000/:path*",
+        },
+      ],
+    };
   },
 };
 
